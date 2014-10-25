@@ -1,0 +1,7 @@
+.gradle
+.lazybones
+build
+/bin/
+.classpath
+.project
+.settings
