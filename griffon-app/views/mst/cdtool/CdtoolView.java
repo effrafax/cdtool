@@ -6,14 +6,17 @@ import griffon.metadata.ArtifactProviderFor;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
 import org.codehaus.griffon.runtime.javafx.artifact.AbstractJavaFXGriffonView;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+
 import java.util.Collections;
 
 @ArtifactProviderFor(GriffonView.class)
@@ -49,12 +52,11 @@ public class CdtoolView extends AbstractJavaFXGriffonView {
 
     // build the UI
     private Scene init() {
-        Scene scene = new Scene(new Group());
+        Node node = loadFromFXML();
+        Scene scene = new Scene((Parent) node);
         scene.setFill(Color.WHITE);
 
-        Node node = loadFromFXML();
         model.clickCountProperty().bindBidirectional(clickLabel.textProperty());
-        ((Group) scene.getRoot()).getChildren().addAll(node);
         connectActions(node, controller);
 
         return scene;
