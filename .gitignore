@@ -5,3 +5,5 @@ build
 .classpath
 .project
 .settings
+/cdtool.log
+/r-cdtool.log
