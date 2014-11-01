@@ -22,7 +22,7 @@ apply plugin: 'org.codehaus.griffon.griffon'
 
 griffon {
     disableDependencyResolution = false
-    includeGroovyDependencies = false
+    includeGroovyDependencies = true
     version = '2.0.0'
     toolkit = 'javafx'
 }
@@ -44,21 +44,42 @@ javafx {
     mainClass = mainClassName
 }
 
+repositories {
+	jcenter()
+	mavenCentral()
+	mavenLocal()
+	maven {
+		name "fileRelease"
+		url "file:///usr/local/share/mvn/release"
+	}
+	maven {
+		name "fileSnapshot"
+		url "file:///usr/local/share/mvn/snapshot"
+	}
+
+}
+
 dependencies {
     compile "org.codehaus.griffon:griffon-guice:${griffon.version}"
+	compile "org.prefux:prefux:0.1-SNAPSHOT"
+	compile "org.codehaus.groovy.modules.http-builder:http-builder:0.7"
+	
+	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.1'
+	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.1'
+	compile group: 'org.apache.logging.log4j', name: 'log4j-1.2-api', version: '2.1'
+	compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.1'
+//    runtime('log4j:log4j:1.2.17') {
+//        exclude group: 'ant',         module: 'ant-nodeps'
+//        exclude group: 'ant',         module: 'ant-junit'
+//        exclude group: 'ant-contrib', module: 'ant-contrib'
+//    }
+//    runtime 'org.slf4j:slf4j-log4j12:1.7.7'
 
-    runtime('log4j:log4j:1.2.17') {
-        exclude group: 'ant',         module: 'ant-nodeps'
-        exclude group: 'ant',         module: 'ant-junit'
-        exclude group: 'ant-contrib', module: 'ant-contrib'
-    }
-    runtime 'org.slf4j:slf4j-log4j12:1.7.7'
-
-    testCompile 'org.codehaus.groovy:groovy-all:2.3.4'
+    testCompile 'org.codehaus.groovy:groovy-all:2.3.6'
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 }
 
-compileGroovy.enabled = false
+compileGroovy.enabled = true
 
 import com.github.jengelman.gradle.plugins.shadow.transformers.*
 shadowJar {
