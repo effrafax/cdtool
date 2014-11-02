@@ -15,12 +15,19 @@ class NeoClientSpec extends Specification {
 		client.initialize()
 
 		when:
-		def result = client.query("MATCH (n:Artist) WHERE n.name={name} RETURN n",[name:"Alin Coen Band"])
+		def result = client.query("MATCH (n:Artist)-->(a:Album) WHERE n.name={name} RETURN n, a",[name:"Alin Coen Band"])
 
 		then:
 		result.size()==2
 		result["errors"]!=null
 		result["results"] instanceof List
+		
+		when:
+		result = client.query("MATCH (n:Artist)->(a:Album) WHERE n.name={name} RETURN n, a",[name:"Alin Coen Band"])
+		
+		then:
+		CypherResultException e = thrown(CypherResultException)
+		e.message.startsWith("Neo.ClientError.Statement.InvalidSyntax")
 	}
 
 
