@@ -1,6 +1,6 @@
 package mst.cdtool.graphdb;
 
-public enum NeoData {
+public enum NeoRestData {
 	SELF("self", "rest.self"),
 	EXTENSIONS("extensions","rest.extensions"),
 	REL_CREATE("create_relationship","rest.create_relationship"),
@@ -26,7 +26,7 @@ public enum NeoData {
 	private final String apiName;
 	private final String localName;
 
-	private NeoData(String apiName, String localName) {
+	private NeoRestData(String apiName, String localName) {
 		this.apiName = apiName;
 		this.localName = localName;
 	}
@@ -39,8 +39,8 @@ public enum NeoData {
 		return localName;
 	}
 
-	public static NeoData apivalue(String apiName) {
-		for (NeoData val : NeoData.values()) {
+	public static NeoRestData apivalue(String apiName) {
+		for (NeoRestData val : NeoRestData.values()) {
 			if (val.getApi().equals(apiName)) {
 				return val;
 			}
@@ -48,8 +48,8 @@ public enum NeoData {
 		throw new IllegalArgumentException("ApiName " + apiName + " does not exist");
 	}
 
-	public static NeoData localvalue(String localName) {
-		for (NeoData val : NeoData.values()) {
+	public static NeoRestData localvalue(String localName) {
+		for (NeoRestData val : NeoRestData.values()) {
 			if (val.getLocal().equals(localName)) {
 				return val;
 			}

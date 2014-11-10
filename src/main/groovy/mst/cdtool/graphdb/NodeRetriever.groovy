@@ -4,7 +4,7 @@ import mst.cdtool.util.HashGenerator;
 import prefux.data.Edge
 import prefux.data.Graph
 import prefux.data.Node
-import static mst.cdtool.graphdb.NeoData.*
+import static mst.cdtool.graphdb.NeoRestData.*
 
 public class NodeRetriever {
 
@@ -57,13 +57,13 @@ public class NodeRetriever {
 			if (key == DATA.api) {
 				value.each { propName, propValue ->
 					if (pNode.getColumnIndex(propName)==-1) {
-						graph.addColumn(propName,String.class)
+						graph.getSet(Graph.NODES).addColumn(propName,String.class)
 					}
 					pNode.setString(propName, propValue)
 				}
 			} else {
-				NeoData data = NeoData.apivalue(key)
-				if (data==NeoData.SELF) {
+				NeoRestData data = NeoRestData.apivalue(key)
+				if (data==NeoRestData.SELF) {
 					pNode.setLong(NeoSchema.ID, HashGenerator.SDBMHash(value.toString().trim()))
 				}
 				pNode.setString(data.local, value.toString())
@@ -72,26 +72,67 @@ public class NodeRetriever {
 	}
 
 
+	/**
+	 * Creates a edge starting from the given node and using the
+	 * edge information from the relation parameter.
+	 * 
+	 * @param startNode The start node
+	 * @param relation The REST data for the relation
+	 * @return The edge 
+	 */
 	def createEdge(Node startNode, def relation) {
 		String startUrl = relation[START.api]
 		String endUrl = relation[END.api]
 		String type = relation[TYPE.api]
-		long startId = HashGenerator.SDBMHash(startUrl)
-		long endId = HashGenerator.SDBMHash(endUrl)
-		Graph graph = startNode.graph
-		def (source,target)=[[startUrl, startId], [endUrl, endId]].collect  { url, id ->
-			Node node = graph.getNodeFromKey(id)
-			if (node==null) {
-				node = graph.addNode()
-				updateNode(node,id,url)
-			}
-			node
+		def source, target
+		def remoteUrl, remoteId
+		if (startNode.getString(SELF.local) == startUrl) {
+			source = startNode
+			remoteUrl = endUrl
+		} else if (startNode.getString(SELF.local) == endUrl) {
+			target = startNode
+			remoteUrl = startUrl
+		} else {
+			throw new NodeMismatchException("The given node "+startNode+" does not match the relation")
 		}
+		remoteId = HashGenerator.SDBMHash(remoteUrl)
+		Graph graph = startNode.graph
+		Node node = graph.getNodeFromKey(remoteId)
+		if (node==null) {
+			node = graph.addNode()
+			updateNode(node,remoteUrl)
+		}
+		if (source==null) {
+			source = node
+		} else {
+			target = node
+		}
+		Edge edge = graph.addEdge(source, target)
+		edge.setString(NeoSchema.TYPE, type)
+		if (relation[DATA.api]) {
+			relation[DATA.api].each { propName, propValue ->
+				if (edge.getColumnIndex(propName)==-1) {
+					graph.getSet(Graph.EDGES).addColumn(propName,String.class)
+				}
+				edge.setString(propName, propValue)
+			}
+		}
+		return edge
 	}
-	
-	def updateNode(Node node, long id, String selfUrl) {
+
+	/**
+	 * Updates the node by querying the REST api and storing the
+	 * data to the node.
+	 * 
+	 * @param node
+	 * @param selfUrl
+	 * @return The Id of the node. 
+	 */
+	long updateNode(Node node, String selfUrl) {
+		long orgId = node.getLong(NeoSchema.ID)
 		def result = rc.restCall(selfUrl)
 		parseRestNodeInfo(result,node)
+		return node.getLong(NeoSchema.ID)
 	}
 
 }
