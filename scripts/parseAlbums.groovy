@@ -212,11 +212,15 @@ if (Files.exists(basePath) && Files.isDirectory(basePath)) {
 			def tracks = tag.getFirst(FieldKey.TRACK_TOTAL)
 			int trackNum = Integer.parseInt(tag.getFirst(FieldKey.TRACK))
 			def len = getTrackLength(header)
-			int discs = Integer.parseInt(tag.getFirst(FieldKey.DISC_TOTAL))
-			int discNum = Integer.parseInt(tag.getFirst(FieldKey.DISC_NO))
+			println tag.getFirst(FieldKey.DISC_NO)
+			int discNum = tag.getFirst(FieldKey.DISC_NO) ? (tag.getFirst(FieldKey.DISC_NO) as int): 1
+			if (discNum>3) {
+				println "BAD DISC NO: ${discNum}"
+				throw new IllegalArgumentException("Bad disc")
+			}
 			def discTitle = tag.getFirst("DISCSUBTITLE")
 			if (!discTitle) {
-				discTitle = album
+				discTitle = "${album} ${discNum}"
 			}
 			def discType = tag.getFirst(FieldKey.MEDIA)
 
