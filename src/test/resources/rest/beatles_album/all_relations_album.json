@@ -1,0 +1,56 @@
+[
+    {
+        "data": {
+            
+        },
+        "end": "http://localhost:7474/db/data/node/2473",
+        "extensions": {
+            
+        },
+        "metadata": {
+            "id": 2331,
+            "type": "RELEASED"
+        },
+        "properties": "http://localhost:7474/db/data/relationship/2331/properties",
+        "property": "http://localhost:7474/db/data/relationship/2331/properties/{key}",
+        "self": "http://localhost:7474/db/data/relationship/2331",
+        "start": "http://localhost:7474/db/data/node/2472",
+        "type": "RELEASED"
+    },
+    {
+        "data": {
+            "index": 1
+        },
+        "end": "http://localhost:7474/db/data/node/2532",
+        "extensions": {
+            
+        },
+        "metadata": {
+            "id": 2390,
+            "type": "HAS_MEDIUM"
+        },
+        "properties": "http://localhost:7474/db/data/relationship/2390/properties",
+        "property": "http://localhost:7474/db/data/relationship/2390/properties/{key}",
+        "self": "http://localhost:7474/db/data/relationship/2390",
+        "start": "http://localhost:7474/db/data/node/2473",
+        "type": "HAS_MEDIUM"
+    },
+    {
+        "data": {
+            "index": 2
+        },
+        "end": "http://localhost:7474/db/data/node/2474",
+        "extensions": {
+            
+        },
+        "metadata": {
+            "id": 2332,
+            "type": "HAS_MEDIUM"
+        },
+        "properties": "http://localhost:7474/db/data/relationship/2332/properties",
+        "property": "http://localhost:7474/db/data/relationship/2332/properties/{key}",
+        "self": "http://localhost:7474/db/data/relationship/2332",
+        "start": "http://localhost:7474/db/data/node/2473",
+        "type": "HAS_MEDIUM"
+    }
+]

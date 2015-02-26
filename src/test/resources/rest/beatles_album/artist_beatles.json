@@ -1,0 +1,27 @@
+{
+    "all_relationships": "http://localhost:7474/db/data/node/2472/relationships/all",
+    "all_typed_relationships": "http://localhost:7474/db/data/node/2472/relationships/all/{-list|&|types}",
+    "create_relationship": "http://localhost:7474/db/data/node/2472/relationships",
+    "data": {
+        "name": "The Beatles"
+    },
+    "extensions": {
+        
+    },
+    "incoming_relationships": "http://localhost:7474/db/data/node/2472/relationships/in",
+    "incoming_typed_relationships": "http://localhost:7474/db/data/node/2472/relationships/in/{-list|&|types}",
+    "labels": "http://localhost:7474/db/data/node/2472/labels",
+    "metadata": {
+        "id": 2472,
+        "labels": [
+            "Artist"
+        ]
+    },
+    "outgoing_relationships": "http://localhost:7474/db/data/node/2472/relationships/out",
+    "outgoing_typed_relationships": "http://localhost:7474/db/data/node/2472/relationships/out/{-list|&|types}",
+    "paged_traverse": "http://localhost:7474/db/data/node/2472/paged/traverse/{returnType}{?pageSize,leaseTime}",
+    "properties": "http://localhost:7474/db/data/node/2472/properties",
+    "property": "http://localhost:7474/db/data/node/2472/properties/{key}",
+    "self": "http://localhost:7474/db/data/node/2472",
+    "traverse": "http://localhost:7474/db/data/node/2472/traverse/{returnType}"
+}
