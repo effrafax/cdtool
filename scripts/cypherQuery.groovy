@@ -9,6 +9,7 @@ def cli = new CliBuilder(usage: 'cypherQuery QUERY [ PARAM1=VALUE1 PARAM2=VALUE2
 // Create the list of options.
 cli.with {
 	h longOpt: 'help', 'Show usage information'
+	t longOpt: 'type', args:1, argName: 'typeName', 'Give the result type'
 	//	c longOpt: 'format-custom', args: 1, argName: 'format', 'Format date with custom format defined by "format"'
 	//	f longOpt: 'format-full',   'Use DateFormat#FULL format'
 	//	l longOpt: 'format-long',   'Use DateFormat#LONG format'
@@ -21,6 +22,11 @@ def options = cli.parse(args)
 if (options?.h) {
 	cli.usage()
 	return
+}
+
+def type =  ["graph"]
+if (options?.t) {
+	type = options.t.split(',')
 }
 
 def query
@@ -41,10 +47,16 @@ if (arguments) {
 	return
 }
 
+if (!query) {
+	println "No query defined"
+	return 1
+}
+
 println "Query: ${query}"
 println "Params: ${params}"
 
-def result = cl.query(query, params)
+
+def result = cl.query(query, params, type)
 println JsonOutput.prettyPrint(JsonOutput.toJson(result))
 
 

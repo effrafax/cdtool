@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Martin Stockhammer
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package mst.cdtool.graphdb
 
 import groovy.json.JsonSlurper
@@ -17,6 +32,7 @@ class NeoClient {
 	private static final String ERROR_CODE = "code"
 	private static final String ERROR_MSG = "message"
 	private static final String PATH_COMMIT = "/commit"
+	private static final String CONTENT_TYPE = "application/json"
 
 	def baseUrl=""
 	HTTPBuilder restClient
@@ -35,10 +51,11 @@ class NeoClient {
 		}
 		def method = requestBody==null ? Method.GET :  Method.POST
 		try {
-			restClient.request(url, method, ContentType.JSON) {
+			
+			restClient.request(url, method, CONTENT_TYPE) {
 				if (requestBody!=null) {
 					body=requestBody.toString()
-					requestContentType="${ContentType.JSON}; charset=UTF-8"
+					requestContentType="${CONTENT_TYPE}; charset=UTF-8"
 				}
 				response.success = { resp, InputStreamReader reader ->
 					def writer = new StringWriter()
@@ -135,7 +152,7 @@ class NeoClient {
 		}
 		def result = restRequest(restUrl) { resp ->
 			log.error "Error : ${resp}"
-			throw new CypherQueryException("Neo REST request failed: "+resp.code)
+			throw new CypherQueryException("Neo REST request failed: "+resp.status)
 		}
 		log.debug "Response: ${result}"
 		return result

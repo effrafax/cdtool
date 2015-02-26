@@ -15,31 +15,31 @@
  */
 package mst.cdtool.graphdb;
 
-public class CypherQueryException extends Exception {
+import groovy.json.JsonSlurper
+import prefux.data.Graph
+import prefux.data.Table
 
-	/**
-	 * 
-	 */
-    private static final long serialVersionUID = 3928922777072393173L;
+public class NeoPrefuxConverter {
 
-	public CypherQueryException() {
+	Graph graph
+	NodeRetriever rt
+
+	public void  initialize() {
+		Table table = new Table();
+		table.addColumns(NeoSchema.getNodeSchema())
+		Table edges = new Table();
+		edges.addColumns(NeoSchema.getEdgeSchema())
+
+		graph = new Graph(table,edges,true,NeoSchema.ID,NeoSchema.SOURCE,NeoSchema.TARGET)
+		
+		rt = new NodeRetriever()
+		rt.graph = graph
 	}
-
-	public CypherQueryException(String message) {
-		super(message);
+	
+	
+	public void initializeGraph(String cypherQuery, Map params) {
+		rt.rc.query(cypherQuery, params, )
 	}
-
-	public CypherQueryException(Throwable cause) {
-		super(cause);
-	}
-
-	public CypherQueryException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public CypherQueryException(String message, Throwable cause,
-	        boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
-
+	
+	
 }

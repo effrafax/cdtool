@@ -13,19 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import griffon.core.GriffonApplication;
-import org.codehaus.griffon.runtime.core.AbstractLifecycleHandler;
+package mst.cdtool
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
+class GraphService {
 
-public class Initialize extends AbstractLifecycleHandler {
-    @Inject
-    public Initialize(@Nonnull GriffonApplication application) {
-        super(application);
-    }
-
-    @Override
-    public void execute() {
-    }
 }
