@@ -174,7 +174,17 @@ class NodeRetrieverSpec extends Specification {
 		1 * restclient.restCall("http://localhost:7474/db/data/node/2472") >> parser.parseText(B_REL_ARTIST)
 		1 * restclient.restCall("http://localhost:7474/db/data/node/2532") >> parser.parseText(B_REL_MEDIUM1)
 		1 * restclient.restCall("http://localhost:7474/db/data/node/2474") >> parser.parseText(B_REL_MEDIUM2)
-		node.edges().toList().size()==3
+		def edges = node.edges().toList() 
+		edges.size()==3
+		def rn1 = edges.findResult { Edge edge ->
+			edge.sourceNode.getLong(NeoSchema.ID)==2472 ? edge.sourceNode : null
+		}
+		rn1.name == "The Beatles"
+		def rn2 = edges.findResult { Edge edge ->
+			edge.targetNode.getLong(NeoSchema.ID)==2532 ? edge.sourceNode : null
+		}
+		rn2.title == "1967-1970"
+
 	}
 
 	
