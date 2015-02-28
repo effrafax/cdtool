@@ -12,6 +12,12 @@
     "incoming_relationships": "http://localhost:7474/db/data/node/5/relationships/in",
     "incoming_typed_relationships": "http://localhost:7474/db/data/node/5/relationships/in/{-list|&|types}",
     "labels": "http://localhost:7474/db/data/node/5/labels",
+    "metadata": {
+        "id": 5,
+        "labels": [
+            "Artist"
+        ]
+    },
     "outgoing_relationships": "http://localhost:7474/db/data/node/5/relationships/out",
     "outgoing_typed_relationships": "http://localhost:7474/db/data/node/5/relationships/out/{-list|&|types}",
     "paged_traverse": "http://localhost:7474/db/data/node/5/paged/traverse/{returnType}{?pageSize,leaseTime}",

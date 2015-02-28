@@ -82,36 +82,28 @@ public class NodeRetriever {
 	 */
 	public void parseRestNodeInfo(Map info, Node pNode) {
 		String selfUrl=""
+		pNode.setLong(NeoSchema.ID,getId(info))
 		info.each { key, value ->
 			if (key == DATA.api) {
 				value.each { propName, propValue ->
 					if (pNode.getColumnIndex(propName)==-1) {
 						graph.getSet(Graph.NODES).addColumn(propName,String.class)
 					}
-					pNode.setString(propName, propValue)
+					pNode.setString(propName, propValue as String)
 				}
+			} else if (key == METADATA.api) {
+				pNode.set(NeoSchema.LABELS, (value.labels as Set))
 			} else {
 				NeoRestData data = NeoRestData.apivalue(key)
-				if (data==NeoRestData.SELF) {
-					pNode.setLong(NeoSchema.ID, HashGenerator.SDBMHash(value.toString().trim()))
-				}
 				pNode.setString(data.local, value.toString())
 			}
 		}
 	}
 	
-	/**
-	 * Parses the REST result of a label query and returns a set of labels
-	 * 
-	 * @param result
-	 * @param node
-	 */
-	void parseLabelInfo(def result, Node node) {
-		log.debug "Label Result: ${result.class} // ${result}"
-		Set labelSet = result as Set
-		node.set(NeoSchema.LABELS, labelSet)
+	public long getId(Map restResult) {
+		return restResult.metadata?.id ?: HashGenerator.SDBMHash(restResult.self.toString().trim())
 	}
-	
+
 	void removeEdge(Edge edge) {
 		edge.graph.removeEdge(edge)
 	}
@@ -140,13 +132,14 @@ public class NodeRetriever {
 		} else {
 			throw new NodeMismatchException("The given node "+startNode+" does not match the relation")
 		}
-		remoteId = HashGenerator.SDBMHash(remoteUrl)
+		def remoteRestResult = rc.restCall(remoteUrl)
+		remoteId = getId(remoteRestResult)
 		Graph graph = startNode.graph
 		Node node = graph.getNodeFromKey(remoteId)
 		if (node==null) {
 			node = graph.addNode()
-			updateNode(node,remoteUrl)
 		}
+		updateNode(node,remoteRestResult)
 		if (source==null) {
 			source = node
 		} else {
@@ -159,32 +152,41 @@ public class NodeRetriever {
 				if (edge.getColumnIndex(propName)==-1) {
 					graph.getSet(Graph.EDGES).addColumn(propName,String.class)
 				}
-				edge.setString(propName, propValue)
+				edge.setString(propName, propValue as String)
 			}
 		}
 		return edge
 	}
-	
 
+
+
+	/**
+	 * Updates the node by querying the REST api and storing the
+	 * data to the node.
+	 *
+	 * @param node
+	 * @param selfUrl
+	 * @return The Id of the node.
+	 */
+	long updateNode(Node node, String selfUrl) {
+		def result = rc.restCall(selfUrl)
+		return updateNode(node, result)
+	}
 
 	/**
 	 * Updates the node by querying the REST api and storing the
 	 * data to the node.
 	 * 
 	 * @param node
-	 * @param selfUrl
+	 * @param restResult the result of the rest call
 	 * @return The Id of the node. 
 	 */
-	long updateNode(Node node, String selfUrl) {
+	long updateNode(Node node, Map restResult) {
 		long orgId = node.getLong(NeoSchema.ID)
-		def result = rc.restCall(selfUrl)
-		parseRestNodeInfo(result,node)
-		def labelUrl = node.getString(LABELS.local)
-		result = rc.restCall(labelUrl)
-		parseLabelInfo(result,node)
+		parseRestNodeInfo(restResult,node)
 		return node.getLong(NeoSchema.ID)
 	}
-	
+
 	/**
 	 * This method should not be used directly. Better use the schema
 	 * specific queries.
@@ -195,15 +197,15 @@ public class NodeRetriever {
 	 * @return The center node
 	 */
 	Node getInitNode(String cypherQuery, Map params) {
-		graph.clear()
-		Node nd = graph.addNode()
-		def result = rc.query(cypherQuery, params)
-		parseRestNodeInfo(result, nd)
-		def labelUrl = nd.getString(LABELS.local)
-		result = rc.restCall(labelUrl)
-		parseLabelInfo(result,nd)
-		updateRelations(nd)
-		return nd
+		def result = rc.query(cypherQuery, params).results[0]?.data[0]?.rest[0]
+		long id = getId(result)
+		Node node = graph.getNodeFromKey(id)
+		if (node==null) {
+			node = graph.addNode()
+		}
+		updateNode(node, result)
+		// updateRelations(nd)
+		return node
 	}
 
 }

@@ -9,6 +9,10 @@
     {
         
     },
+    "metadata": {
+        "id": 3,
+        "type": "RELEASED"
+    },
 
     "properties": "http://localhost:7474/db/data/relationship/3/properties",
     "property": "http://localhost:7474/db/data/relationship/3/properties/{key}",

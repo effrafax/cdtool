@@ -25,7 +25,7 @@ public enum NeoRestData {
 	REL_TYPED_OUT("outgoing_typed_relationships", "rest.outgoing_typed_relationships"), 
 	REL_TYPED_IN("incoming_typed_relationships", "rest.incoming_typed_relationships"), 
 	REL_TYPED_ALL("all_typed_relationships", "rest.all_typed_relationships"), 
-	LABELS("labels", "rest.labels"), 
+	LABELS("labels", "rest.labels_url"), 
 	PROPERTIES("properties", "rest.properties"), 
 	PROPERTY("property", "rest.property"), 
 	START("start", "rest.start"), 
@@ -33,7 +33,11 @@ public enum NeoRestData {
 	TYPE("type", "rest.type"),
 	DATA("data","-"),
 	TRAVERSE("traverse","rest.traverse"),
-	PAGED_TRAVERSE("paged_traverse","rest.paged_traverse");
+	PAGED_TRAVERSE("paged_traverse","rest.paged_traverse"),
+	ERRORS("errors","rest.errors"),
+	METADATA("metadata","rest.metadata"),
+	META_ID("metadata.id","rest.id"),
+	META_LABELS("metadata.labels","rest.labels");
 
 	
 	

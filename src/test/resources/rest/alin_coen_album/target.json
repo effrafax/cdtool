@@ -11,6 +11,12 @@
     {
         
     },
+    "metadata": {
+        "id": 7,
+        "labels": [
+            "Album"
+        ]
+    },
 
     "incoming_relationships": "http://localhost:7474/db/data/node/7/relationships/in",
     "incoming_typed_relationships": "http://localhost:7474/db/data/node/7/relationships/in/{-list|&|types}",

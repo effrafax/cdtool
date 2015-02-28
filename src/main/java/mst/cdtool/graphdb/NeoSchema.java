@@ -22,6 +22,7 @@ import prefux.data.Schema;
 public class NeoSchema {
 	
 	public static final String ID = "id";
+	public static final String URL_HASH = "url_hash";
 	public static final String TYPE = "type";
 	public static final String SOURCE = "source";
 	public static final String TARGET = "target";
@@ -37,6 +38,7 @@ public class NeoSchema {
 				schema.addColumn(val.getLocal(), String.class);
 			}
 			schema.addColumn(ID, long.class);
+			schema.addColumn(URL_HASH, long.class);
 			schema.addColumn(SOURCE, long.class);
 			schema.addColumn(TARGET, long.class);
 			schema.addColumn(LABELS, Set.class);

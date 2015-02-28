@@ -30,6 +30,12 @@ class NodeRetrieverSpec extends Specification {
 	private static String NODE_INFO
 	private static String RELATION
 	private static String TARGET_NODE
+	private static String B_QUERY
+	private static String B_REL
+	private static String B_REL_ARTIST
+	private static String B_REL_MEDIUM1
+	private static String B_REL_MEDIUM2
+	
 	private static final String LABEL_ALBUM_DATA="""[
     "Album"
 ]
@@ -56,6 +62,12 @@ class NodeRetrieverSpec extends Specification {
 		NODE_INFO = cl.getResourceAsStream("rest/alin_coen_album/node.json").text
 		RELATION = cl.getResourceAsStream("rest/alin_coen_album/relation.json").text
 		TARGET_NODE = cl.getResourceAsStream("rest/alin_coen_album/target.json").text
+		
+		B_QUERY = cl.getResourceAsStream("rest/beatles_album/query_album.json").text
+		B_REL = cl.getResourceAsStream("rest/beatles_album/all_relations_album.json").text
+		B_REL_ARTIST = cl.getResourceAsStream("rest/beatles_album/artist_beatles.json").text
+		B_REL_MEDIUM1 = cl.getResourceAsStream("rest/beatles_album/medium_1.json").text
+		B_REL_MEDIUM2 = cl.getResourceAsStream("rest/beatles_album/medium_2.json").text
 	}
 
 	void "test node parsing"() {
@@ -87,7 +99,6 @@ class NodeRetrieverSpec extends Specification {
 
 		then:
 		1 * restclient.restCall("http://self") >>  jsonData
-		1 * restclient.restCall("http://localhost:7474/db/data/node/5/labels") >> labelData
 		node.getString(NeoRestData.SELF.local)=="http://localhost:7474/db/data/node/5"
 		node.getString("name")=="Alin Coen Band"
 		node.getLong("id")!=0
@@ -113,7 +124,6 @@ class NodeRetrieverSpec extends Specification {
 
 		then:
 		1 * restclient.restCall("http://localhost:7474/db/data/node/7") >>  targetData
-		1 * restclient.restCall("http://localhost:7474/db/data/node/7/labels") >> labelData
 		result!=null
 		result instanceof Edge
 		result.getString(NeoSchema.TYPE)=="RELEASED"
@@ -122,4 +132,50 @@ class NodeRetrieverSpec extends Specification {
 		result.getString("index")=="1"
 		result.getTargetNode().get(NeoSchema.LABELS)?.contains("Album")
 	}
+	
+	void "test query node"() {
+		given:
+		NodeRetriever nt = new NodeRetriever()
+		nt.graph = graph
+		Node node = graph.addNode()
+		node.setString(NeoRestData.SELF.local, "http://localhost:7474/db/data/node/2473")
+		NeoClient restclient = Mock()
+		nt.rc=restclient
+		
+		when:
+		def result = nt.getInitNode("QUERY",[:])
+		
+		then:
+		1 * restclient.query("QUERY",[:]) >> parser.parseText(B_QUERY)
+		result instanceof Node
+		Node nd = result
+		nd.get(NeoSchema.ID) == 2473
+		nd.get("tracks_total")=="14"
+		nd.get(NeoSchema.LABELS) == (["Album"] as Set)
+		
+	}
+
+	void "test update relations"() {
+		given:
+		NodeRetriever nt = new NodeRetriever()
+		nt.graph = graph
+		Node node = graph.addNode()
+		node.setString(NeoRestData.SELF.local, "http://localhost:7474/db/data/node/2473")
+		NeoClient restclient = Mock()
+		nt.rc=restclient
+		
+		when:
+		node = nt.getInitNode("QUERY",[:])
+		nt.updateRelations(node)
+		
+		then:
+		1 * restclient.query("QUERY",[:]) >> parser.parseText(B_QUERY)
+		1 * restclient.restCall("http://localhost:7474/db/data/node/2473/relationships/all") >> parser.parseText(B_REL)
+		1 * restclient.restCall("http://localhost:7474/db/data/node/2472") >> parser.parseText(B_REL_ARTIST)
+		1 * restclient.restCall("http://localhost:7474/db/data/node/2532") >> parser.parseText(B_REL_MEDIUM1)
+		1 * restclient.restCall("http://localhost:7474/db/data/node/2474") >> parser.parseText(B_REL_MEDIUM2)
+		node.edges().toList().size()==3
+	}
+
+	
 }
