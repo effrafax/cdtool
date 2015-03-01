@@ -1,19 +1,27 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
+
 buildscript {
-    repositories {
-        jcenter()
+	repositories { 
+        jcenter() 
+        maven {
+           url "http://dl.bintray.com/griffon/griffon/"
+        }
     }
 
-    dependencies {
-		classpath 'org.codehaus.griffon:gradle-griffon-plugin:2.1.0'
-        classpath 'net.saliman:gradle-cobertura-plugin:2.2.5'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
-        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
-        classpath 'org.gradle.api.plugins:gradle-izpack-plugin:0.2.3'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.0'
-        classpath 'edu.sc.seis.gradle:macappbundle:2.0.0'
-        classpath 'org.kordamp.gradle:stats-gradle-plugin:0.1.3'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.6'
-    }
+	dependencies {
+		classpath 'org.codehaus.griffon:gradle-griffon-plugin:2.2.0'
+		classpath 'net.saliman:gradle-cobertura-plugin:2.2.6'
+		classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1'
+		classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
+		classpath 'org.gradle.api.plugins:gradle-izpack-plugin:0.2.3'
+		classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.1'
+		classpath 'edu.sc.seis.gradle:macappbundle:2.0.0'
+		classpath 'org.kordamp.gradle:stats-gradle-plugin:0.1.3'
+		classpath 'com.github.ben-manes:gradle-versions-plugin:0.8'
+		classpath 'de.gliderpilot.gradle.jnlp:gradle-jnlp-plugin:0.0.6'
+	}
 }
 
 apply plugin: 'eclipse'
@@ -21,10 +29,10 @@ apply plugin: 'groovy'
 apply plugin: 'org.codehaus.griffon.griffon'
 
 griffon {
-    disableDependencyResolution = false
-    includeGroovyDependencies = true
-    version = '2.1.0'
-    toolkit = 'javafx'
+	disableDependencyResolution = false
+	includeGroovyDependencies = true
+	version = '2.2.0'
+	toolkit = 'javafx'
 }
 
 mainClassName = 'mst.cdtool.Launcher'
@@ -32,17 +40,24 @@ mainClassName = 'mst.cdtool.Launcher'
 apply from: 'gradle/publishing.gradle'
 apply from: 'gradle/code-coverage.gradle'
 apply from: 'gradle/code-quality.gradle'
-apply from: 'gradle/integration-test.gradle'
 apply from: 'gradle/javafx-plugin.gradle'
 apply from: 'gradle/package.gradle'
 apply from: 'gradle/docs.gradle'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'org.kordamp.gradle.stats'
 apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'com.github.kt3k.coveralls'
+
 
 
 javafx {
-    mainClass = mainClassName
+	mainClass = mainClassName
+	if (project.hasProperty("rundebug")) {
+		jvmArgs = [
+			'-Xdebug',
+			'-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009'
+		]
+	}
 }
 
 repositories {
@@ -57,38 +72,41 @@ repositories {
 		name "fileSnapshot"
 		url "file:///usr/local/share/mvn/snapshot"
 	}
-	
-	maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+    maven {
+        url "http://dl.bintray.com/griffon/griffon/"
+    }
 
+	maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 dependencies {
-    compile "org.codehaus.griffon:griffon-guice:${griffon.version}"
+	compile "org.codehaus.griffon:griffon-guice:${griffon.version}"
 	compile "org.prefux:prefux:0.1-SNAPSHOT"
 	compile "org.codehaus.groovy.modules.http-builder:http-builder:0.7"
-	
+
 	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.1'
 	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.1'
 	compile group: 'org.apache.logging.log4j', name: 'log4j-1.2-api', version: '2.1'
 	compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.1'
 	compile group: 'org.apache.logging.log4j', name: 'log4j-jul', version: '2.1'
+	
 	compile 'commons-cli:commons-cli:1.2'
-	compile 'org.codehaus.groovy:groovy-all:2.3.7'
-	
+	compile 'org.codehaus.groovy:groovy-all:2.4.1'
+
 	compile 'org:jaudiotagger:2.0.3'
-	
-//    runtime('log4j:log4j:1.2.17') {
-//        exclude group: 'ant',         module: 'ant-nodeps'
-//        exclude group: 'ant',         module: 'ant-junit'
-//        exclude group: 'ant-contrib', module: 'ant-contrib'
-//    }
-//    runtime 'org.slf4j:slf4j-log4j12:1.7.7'
+
+	//    runtime('log4j:log4j:1.2.17') {
+	//        exclude group: 'ant',         module: 'ant-nodeps'
+	//        exclude group: 'ant',         module: 'ant-junit'
+	//        exclude group: 'ant-contrib', module: 'ant-contrib'
+	//    }
+	//    runtime 'org.slf4j:slf4j-log4j12:1.7.7'
 
 	testCompile "org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT"
 	testCompile "org.hamcrest:hamcrest-core:1.3" // only necessary if Hamcrest matchers are used
 	testRuntime "cglib:cglib-nodep:3.1" // allows mocking of classes (in addition to interfaces)
 	testRuntime "org.objenesis:objenesis:2.1" // allows mocking of classes without default constructor (together with CGLIB)
-	
+
 }
 
 license {
@@ -97,9 +115,7 @@ license {
 	exclude "**/*.json"
 	exclude "**/*.png"
 	exclude "**/*.properties"
-	mapping {
-		fxml='XML_STYLE'
-	}
+	mapping { fxml='XML_STYLE' }
 }
 
 
@@ -107,13 +123,13 @@ compileGroovy.enabled = true
 
 import com.github.jengelman.gradle.plugins.shadow.transformers.*
 shadowJar {
-    transform(ServiceFileTransformer)
-    transform(ServiceFileTransformer) {
-        path = 'META-INF/griffon'
-    }
-    transform(PropertiesFileTransformer) {
-        paths = [
-            'META-INF/editors/java.beans.PropertyEditor'
-        ]
-    }
+	transform(ServiceFileTransformer)
+	transform(ServiceFileTransformer) { path = 'META-INF/griffon' }
+	transform(PropertiesFileTransformer) {
+		paths = [
+			'META-INF/editors/java.beans.PropertyEditor'
+		]
+	}
 }
+
+
