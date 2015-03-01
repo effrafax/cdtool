@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 
     Copyright 2015 Martin Stockhammer
@@ -24,16 +25,15 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.GridPane?>
 
-
 <StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mst.cdtool.CdtoolController">
    <children>
-      <Accordion maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+      <Accordion>
         <panes>
-            <TitledPane text="Counter">
+            <TitledPane animated="false" text="Click">
                <content>
                   <GridPane prefHeight="60.0" prefWidth="200.0">
                       <children>
-                          <Label fx:id="clickLabel" text="0" />
+                          <Label fx:id="counterLabel" text="0" />
                           <Button fx:id="clickActionTarget" mnemonicParsing="false" prefWidth="200.0" text="Click" GridPane.rowIndex="1" />
                       </children>
                      <columnConstraints>
@@ -46,9 +46,9 @@
                   </GridPane>
                </content>
             </TitledPane>
-            <TitledPane animated="false" text="Music Database">
+            <TitledPane animated="false" text="Music">
               <content>
-                <AnchorPane id="graphPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
               </content>
             </TitledPane>
         </panes>

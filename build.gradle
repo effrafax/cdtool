@@ -121,6 +121,27 @@ license {
 
 compileGroovy.enabled = true
 
+tasks.withType(JavaCompile) {
+	sourceCompatibility = project.sourceCompatibility
+	targetCompatibility = project.targetCompatibility
+}
+
+tasks.withType(GroovyCompile) {
+	sourceCompatibility = project.sourceCompatibility
+	targetCompatibility = project.targetCompatibility
+}
+
+sourceSets {
+	main {
+		groovy {
+			srcDirs += ["src/main/java"]
+		}
+		java {
+			srcDirs = []
+		}
+	}
+}
+
 import com.github.jengelman.gradle.plugins.shadow.transformers.*
 shadowJar {
 	transform(ServiceFileTransformer)

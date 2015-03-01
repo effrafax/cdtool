@@ -15,11 +15,12 @@
  */
 package mst.cdtool;
 
-import griffon.core.GriffonApplication;
 import griffon.core.artifact.GriffonView;
 import griffon.metadata.ArtifactProviderFor;
+
+import java.util.Collections;
+
 import javafx.fxml.FXML;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,23 +30,15 @@ import javafx.stage.Stage;
 
 import org.codehaus.griffon.runtime.javafx.artifact.AbstractJavaFXGriffonView;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-
-import java.util.Collections;
-
 @ArtifactProviderFor(GriffonView.class)
 public class CdtoolView extends AbstractJavaFXGriffonView {
     private CdtoolController controller;
     private CdtoolModel model;
 
+	
     @FXML
-    private Label clickLabel;
-
-    @Inject
-    public CdtoolView(@Nonnull GriffonApplication application) {
-        super(application);
-    }
+    private Label counterLabel;
+    
 
     public void setController(CdtoolController controller) {
         this.controller = controller;
@@ -68,12 +61,12 @@ public class CdtoolView extends AbstractJavaFXGriffonView {
     // build the UI
     private Scene init() {
         Node node = loadFromFXML();
-        Scene scene = new Scene((Parent) node);
+        Scene scene = new Scene((Parent) node, 800,600);
         scene.setFill(Color.WHITE);
-
-        model.clickCountProperty().bindBidirectional(clickLabel.textProperty());
-        connectActions(node, controller);
-
+		
+        model.clickCountProperty().bindBidirectional(counterLabel.textProperty());
+        
+		connectActions(node, controller);
         return scene;
     }
 }
